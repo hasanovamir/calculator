@@ -10,10 +10,10 @@
 const int MAXSTRINGSIZE    = 256;
 const int MAXCOMMANDSIZE   = 128;
 const int MAXFILENAMESIZE  = 32;
-const int ALLOCCAPACITY    = 512;
+const int AllocCapacity    = 512;
 const int COMMONSTACKSIZE  = 128;
 const int COMMONSTRINGSIZE = 100;
-const int STARTBIGARRAYCAP = 8;
+const int StartBigArrayCap = 8;
 
 //————————————————————————————————————————————————————————————————————————————————
 
