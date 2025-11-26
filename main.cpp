@@ -6,15 +6,11 @@
 int 
 main ()
 {
-    my_alloc_context_t my_alloc_context = {};
-    tree_context_t tree_context = {};
-    tree_context.my_alloc_context = &my_alloc_context;
+    TreeInit ();
 
-    TreeInit (&tree_context);
+    TreeReadDataBase ("test.txt");
 
-    TreeReadDataBase (&tree_context, "test.txt");
-
-    TreeDump (&tree_context);
+    TreeDump ();
 
     return 0;
 }

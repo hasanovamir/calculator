@@ -43,8 +43,6 @@ list_err_t ListInit (list_t* list, int capacity)
 
     MemSetList (list);
 
-    ListStartFillHtml ();
-
     return LIST_SUCCESS;
 }
 
@@ -52,8 +50,6 @@ list_err_t ListInit (list_t* list, int capacity)
 
 list_err_t IncreaseList (list_t* list)
 {
-    LIST_VERIFY (list);
-
     int new_capacity = list->capacity * 2;
 
     list_data_t* data_temp = NULL;
@@ -86,8 +82,6 @@ list_err_t IncreaseList (list_t* list)
 
 list_err_t ListDestroy (list_t* list)
 {
-    LIST_VERIFY (list);
-
     free (list->data);
     free (list->next);
     free (list->prev);
@@ -96,8 +90,6 @@ list_err_t ListDestroy (list_t* list)
     list->next = NULL;
     list->prev = NULL;
 
-    ListEndFillHtml ();
-
     return LIST_SUCCESS;
 }
 
@@ -105,7 +97,7 @@ list_err_t ListDestroy (list_t* list)
 
 void MemSetList (list_t* list)
 {
-    DEBUG_ASSERT (list != NULL);
+    DEBUG_ASSERT (list       != NULL);
     DEBUG_ASSERT (list->data != NULL);
     DEBUG_ASSERT (list->next != NULL);
     DEBUG_ASSERT (list->prev != NULL);
@@ -114,20 +106,14 @@ void MemSetList (list_t* list)
     int*         prev_arr = list->prev;
     list_data_t* data_arr = list->data;
 
-    int start_val = 0;
-
-    if (list->size == 0)
-        start_val = 0;
-    else
-        start_val = list->size + 1;
-
-    // int start_val = (list->size == 0) ? 0 : list->size + 1;
+    int start_val = (list->size == 0) ? 0 : list->size + 1;
 
     for (int i = start_val; i < list->capacity; i++)
     {
-        prev_arr[i]   = -1;
-        next_arr[i]   = i + 1;
-        data_arr[i]   = POISON;
+        prev_arr[i] = -1;
+        next_arr[i] = i + 1;
+        
+        data_arr[i].node_data.data = POISON;
     }
 
     if (list->size == 0) 

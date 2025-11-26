@@ -1,76 +1,76 @@
-#ifndef LIST_H
-#define LIST_H
+#ifndef TREE_TYPES_H
+#define TREE_TYPES_H
 
 //————————————————————————————————————————————————————————————————————————————————
 
-#define POISON 0x66677752
+typedef enum {
+    addition       = 1,
+    difference     = 2,
+    multiplication = 3,
+    division       = 4,
+    exponentiation = 5,
+    root           = 6,
+    logarithm      = 7,
+    sin            = 8,
+    cos            = 9,
+    tg             = 10,
+    ctg            = 11,
+    arcsin         = 12,
+    arccos         = 13,
+    arctg          = 14,
+    arcctg         = 15,
+    sh             = 16,
+    ch             = 17,
+} math_oper_t;
 
 //————————————————————————————————————————————————————————————————————————————————
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "tree_types.h"
-#include "../macros.h"
-
-
-//————————————————————————————————————————————————————————————————————————————————
-
-typedef tree_node_t list_data_t;
-
-//————————————————————————————————————————————————————————————————————————————————
-
-typedef enum
-{ 
-    LIST_SUCCESS,
-    LIST_INVALID_IDX,
-    LIST_INVALID_CAPACITY_SIZE,
-    LIST_ALLOCATE_ERR,
-    LIST_UP_SIZE_ERR,
-    LIST_GET_NEXT_FREE_ERR,
-    LIST_CHANGE_NEXT_ERR,
-    LIST_CHANGE_PREV_ERR,
-    LIST_OPEN_FILE_ERR,
-    LIST_SYS_FUNC_ERR,
-    LIST_INVALID_FREE_VAL,
-    LIST_INVALID_HEAD,
-    LIST_INVALID_TAIL,
-    LIST_INVALID_SIZE,
-    LIST_INCORRECT_NUMBERING,
-} list_err_t;
-
-//————————————————————————————————————————————————————————————————————————————————
-
-struct list_t
-{
-    list_data_t* data;
-    int* next;
-    int* prev;
-    int  head;
-    int  tail;
-    int  free;
-    int  size;
-    int  capacity;
-    int  num_calls;
+struct math_oper_cont_t {
+    const char* oper_name;
+    const char* oper;
 };
 
 //————————————————————————————————————————————————————————————————————————————————
 
-void       MemSetList        (list_t* list);
-list_err_t ListDestroy       (list_t* list);
-list_err_t ChangeFree        (list_t* list);
-list_err_t IncreaseList      (list_t* list);
-list_err_t ListDelete        (list_t* list, int idx);
-list_err_t ListInsertToStart (list_t* list, int val);
-list_err_t ListInsertToEnd   (list_t* list, int val);
-list_err_t ListInit          (list_t* list, int capacity          );
-list_err_t ListInsertAfter   (list_t* list, int idx, int  val     );
-list_err_t ListInsertBefore  (list_t* list, int idx, int  val     );
-list_err_t ListGetNext       (list_t* list, int idx, int* next_idx);
-list_err_t ListGetPrev       (list_t* list, int idx, int* prev_idx);
-list_err_t ListGetFree       (list_t* list, int idx, int* free_idx);
-list_err_t ListPop           (list_t* list, int idx, int* ret_val );
+typedef union {
+    int         var_number;
+    double      data;
+    math_oper_t operation;
+} tree_data_t;
 
 //————————————————————————————————————————————————————————————————————————————————
 
-#endif //LISTH
+typedef enum
+{
+    TREE_SUCCESS,
+    TREE_OPEN_FILE_ERR,
+    TREE_SYS_FUNC_ERR,
+    TREE_ALLOC_ERR,
+    TREE_INVALID_FILE_SIZE,
+    TREE_NO_WORD_IN_SPACE,
+    TREE_UNKNOWN_DATA_TYPE,
+} tree_err_t;
+
+//————————————————————————————————————————————————————————————————————————————————
+
+typedef enum
+{
+    operation = 0,
+    value     = 1,
+    var_num   = 2,
+} node_type_t;
+
+//————————————————————————————————————————————————————————————————————————————————
+
+struct tree_node_t {
+    int          idx;
+    node_type_t  type;
+    tree_data_t  node_data;
+    tree_node_t* prev_node;
+    tree_node_t* left_node;
+    tree_node_t* right_node;
+};
+
+//————————————————————————————————————————————————————————————————————————————————
+
+#endif //TREE_TYPES_H
