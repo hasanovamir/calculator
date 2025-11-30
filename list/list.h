@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "tree_types.h"
-#include "../macros.h"
+#include "macros.h"
 
 
 //————————————————————————————————————————————————————————————————————————————————
@@ -70,6 +70,14 @@ list_err_t ListGetNext       (list_t* list, int idx, int* next_idx);
 list_err_t ListGetPrev       (list_t* list, int idx, int* prev_idx);
 list_err_t ListGetFree       (list_t* list, int idx, int* free_idx);
 list_err_t ListPop           (list_t* list, int idx, int* ret_val );
+list_err_t FillDotFile (list_t* list, const char* file_name);
+void MakeDumpTitle (FILE* dot_file);
+void MakeDumpNode (FILE* dot_file, int node_number, int idx, list_data_t data, int prev, int next, const char* color);
+void MakeDumpEdge (FILE* dot_file, int node_num_1, int node_num_2, const char* color);
+list_err_t ListDump (list_t* list);
+list_err_t ListStartFillHtml (void);
+list_err_t ListFillHtml (list_t* list, const char* file_name);
+list_err_t ListEndFillHtml (void);
 
 //————————————————————————————————————————————————————————————————————————————————
 

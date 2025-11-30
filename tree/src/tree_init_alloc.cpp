@@ -30,7 +30,7 @@ MyAlloc ()
 {
     my_alloc_context_t* alloc_context = tree_context.my_alloc_context;
 
-    if  (alloc_context->big_array[alloc_context->cur_array].pos_in_cur_arr == AllocCapacity)
+    while  (alloc_context->big_array[alloc_context->cur_array].list.free == 0)
     {
         if (ChangeSrcArray ()) {
             return NULL;
@@ -85,8 +85,6 @@ InitBigArray ()
         for (int j = 0; j < AllocCapacity; j++) {
             big_array_ptr[i].list.data[j].idx = i * AllocCapacity + j;
         }
-
-        big_array_ptr[i].pos_in_cur_arr = 1;
     }
 
     tree_context.my_alloc_context->big_array = big_array_ptr;
@@ -120,8 +118,6 @@ ChangeSrcArray ()
             if (ListInit (&tmp[i + num_arr].list, AllocCapacity)) {
                 return TREE_ALLOC_ERR;
             }
-
-            tmp[i + num_arr].pos_in_cur_arr = 1;
         }
 
         alloc_context->big_array = tmp;
@@ -133,9 +129,51 @@ ChangeSrcArray ()
 
     alloc_context->cur_array++; 
 
-    alloc_context->big_array[alloc_context->cur_array].pos_in_cur_arr = 1;
-
     return TREE_SUCCESS;
+}
+
+//--------------------------------------------------------------------------------
+
+void 
+MyFree (tree_node_t* node)
+{
+    int cur_arr = 0;
+
+    for (int i = 0; i < tree_context.my_alloc_context->num_src_arr; i++) {
+        if (node > tree_context.my_alloc_context->big_array[i].list.data &&
+            node < tree_context.my_alloc_context->big_array[i].list.data + AllocCapacity) {
+                cur_arr = i;
+                break;
+            }
+    }
+
+    int pos = node - tree_context.my_alloc_context->big_array[cur_arr].list.data;
+
+    int prev_free = tree_context.my_alloc_context->big_array[cur_arr].list.free;
+
+    tree_context.my_alloc_context->big_array[cur_arr].list.next[pos] = prev_free;
+
+    tree_context.my_alloc_context->big_array[cur_arr].list.free = pos;
+ 
+    tree_context.my_alloc_context->cur_array = cur_arr;
+
+    tree_context.my_alloc_context->src_size--;
+}
+
+//--------------------------------------------------------------------------------
+
+void 
+FreeSideNodes (tree_node_t* parent_node)
+{
+    if (parent_node->left_node) {
+        MyFree (parent_node->left_node );
+    }
+    if (parent_node->right_node) {
+        MyFree (parent_node->right_node);
+    }
+
+    parent_node->left_node  = nullptr;
+    parent_node->right_node = nullptr;
 }
 
 //--------------------------------------------------------------------------------

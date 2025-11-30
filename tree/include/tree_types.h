@@ -4,23 +4,23 @@
 //————————————————————————————————————————————————————————————————————————————————
 
 typedef enum {
-    addition       = 1,
-    difference     = 2,
-    multiplication = 3,
-    division       = 4,
-    exponentiation = 5,
-    root           = 6,
-    logarithm      = 7,
-    sin            = 8,
-    cos            = 9,
-    tg             = 10,
-    ctg            = 11,
-    arcsin         = 12,
-    arccos         = 13,
-    arctg          = 14,
-    arcctg         = 15,
-    sh             = 16,
-    ch             = 17,
+    addition_op       = 0,
+    difference_op     = 1,
+    multiplication_op = 2,
+    division_op       = 3,
+    exponentiation_op = 4,
+    root_op           = 5,
+    logarithm_op      = 6,
+    sin_op            = 7,
+    cos_op            = 8,
+    tg_op             = 9,
+    ctg_op            = 10,
+    arcsin_op         = 11,
+    arccos_op         = 12,
+    arctg_op          = 13,
+    arcctg_op         = 14,
+    sh_op             = 15,
+    ch_op             = 16,
 } math_oper_t;
 
 //————————————————————————————————————————————————————————————————————————————————
@@ -34,7 +34,7 @@ struct math_oper_cont_t {
 
 typedef union {
     int         var_number;
-    double      data;
+    double      immediate;
     math_oper_t operation;
 } tree_data_t;
 
@@ -56,7 +56,7 @@ typedef enum
 typedef enum
 {
     operation = 0,
-    value     = 1,
+    constant  = 1,
     var_num   = 2,
 } node_type_t;
 

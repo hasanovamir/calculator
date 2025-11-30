@@ -31,7 +31,7 @@ list_err_t ListGetFree (list_t* list, int idx, int* free_idx)
 
 list_err_t ListPop (list_t* list, int idx, int* ret_val)
 {
-    *ret_val = list->data[idx].node_data.data;
+    *ret_val = list->data[idx].node_data.immediate;
     
     return LIST_SUCCESS;
 }
@@ -46,7 +46,7 @@ list_err_t ListInsertAfter (list_t* list, int idx, int val)
         return   (LIST_INVALID_IDX);
     }
 
-    if (list->data[idx].node_data.data == POISON && idx != 0)
+    if (list->data[idx].node_data.immediate == POISON && idx != 0)
     {
         PRINTERR (LIST_INVALID_IDX);
         return   (LIST_INVALID_IDX);
@@ -59,7 +59,7 @@ list_err_t ListInsertAfter (list_t* list, int idx, int val)
         return LIST_UP_SIZE_ERR;
     }
 
-    list->data[free].node_data.data = val;
+    list->data[free].node_data.immediate = val;
 
     list->prev[free] = idx;
     list->prev[list->next[idx]] = free;
@@ -85,7 +85,7 @@ list_err_t ListInsertBefore (list_t* list, int idx, int val)
         return   (LIST_INVALID_IDX);
     }
 
-    if (list->data[idx].node_data.data == POISON && idx != 0)
+    if (list->data[idx].node_data.immediate == POISON && idx != 0)
     {
         PRINTERR (LIST_INVALID_IDX);
         return   (LIST_INVALID_IDX);
@@ -98,7 +98,7 @@ list_err_t ListInsertBefore (list_t* list, int idx, int val)
         return LIST_UP_SIZE_ERR;
     }
 
-    list->data[free].node_data.data = val;
+    list->data[free].node_data.immediate = val;
 
     list->next[free] = idx;
     list->next[list->prev[idx]] = free;
@@ -125,7 +125,7 @@ list_err_t ListInsertToStart (list_t* list, int val)
         return LIST_UP_SIZE_ERR;
     }
 
-    list->data[free].node_data.data = val;
+    list->data[free].node_data.immediate = val;
 
     list->next[0] = free;
     list->next[free] = list->head;
@@ -152,7 +152,7 @@ list_err_t ListInsertToEnd (list_t* list, int val)
         return LIST_UP_SIZE_ERR;
     }
 
-    list->data[free].node_data.data = val;
+    list->data[free].node_data.immediate = val;
 
     list->next[list->tail] = free;
     list->next[free] = 0;
@@ -191,7 +191,7 @@ list_err_t ChangeFree (list_t* list)
 
 list_err_t ListDelete (list_t* list, int idx)
 {
-    list->data[idx].node_data.data = POISON;
+    list->data[idx].node_data.immediate = POISON;
     
     list->next[list->prev[idx]] = list->next[idx];
     list->prev[list->next[idx]] = list->prev[idx];

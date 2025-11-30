@@ -1,4 +1,4 @@
-#include "../calculator.h"
+#include "calculator.h"
 #include "general_io_file_func.h"
 
 //--------------------------------------------------------------------------------
@@ -31,8 +31,8 @@ TreeWriteNode (tree_node_t* node, FILE* file)
     if (node->type == operation) {
         fprintf (file, "(%s", operations[node->node_data.operation].oper);
     }
-    else if (node->type == value) {
-        fprintf (file, "(%lf", node->node_data.data);
+    else if (node->type == constant) {
+        fprintf (file, "(%lf", node->node_data.immediate);
     }
     else {
         fprintf (file, "(x");
@@ -133,9 +133,9 @@ TreeReadNode (tree_node_t* parent_node, char* buffer, int* pos)
             (*pos)++;
         }
         else if (MyAtof (buffer + *pos, &data_value) == 0) {
-            new_node->type = value;
+            new_node->type = constant;
 
-            new_node->node_data.data = data_value;
+            new_node->node_data.immediate = data_value;
 
             while (isdigit(buffer[*pos]) || buffer[*pos] == '.') {
                 (*pos)++;

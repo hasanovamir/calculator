@@ -1,17 +1,21 @@
-#include "tree.h"
+#include "calculator.h"
 #include "common_dump.h"
 
 //--------------------------------------------------------------------------------
 
 int 
-main ()
+main (int argc, char** argv)
 {
-    TreeInit ();
+    CalculatorInit (argv[1]);
 
-    TreeReadDataBase ("test.txt");
+    tree_node_t* ptr = DifferentiateNode (tree_context.head); 
 
-    TreeDump ();
+    TreeDump (tree_context.head);
+    TreeDump (ptr);
 
+    OptimizeTree (ptr);
+
+    TreeDump (ptr);
     return 0;
 }
 

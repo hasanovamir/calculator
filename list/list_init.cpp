@@ -113,7 +113,7 @@ void MemSetList (list_t* list)
         prev_arr[i] = -1;
         next_arr[i] = i + 1;
         
-        data_arr[i].node_data.data = POISON;
+        data_arr[i].node_data.immediate = POISON;
     }
 
     if (list->size == 0) 

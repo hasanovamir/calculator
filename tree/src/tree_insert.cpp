@@ -35,3 +35,19 @@ MakeNode (tree_node_t** node)
 }
 
 //--------------------------------------------------------------------------------
+
+void 
+TreeDeleteBranch (tree_node_t* node)
+{
+    if (node->left_node) {
+        TreeDeleteBranch (node->left_node);
+    }
+
+    if (node->right_node) {
+        TreeDeleteBranch (node->right_node);
+    }
+
+    MyFree (node);
+}
+
+//--------------------------------------------------------------------------------
