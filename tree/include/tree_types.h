@@ -21,6 +21,7 @@ typedef enum {
     arcctg_op         = 14,
     sh_op             = 15,
     ch_op             = 16,
+    equality_op       = 17,
 } math_oper_t;
 
 //————————————————————————————————————————————————————————————————————————————————
@@ -56,8 +57,9 @@ typedef enum
 typedef enum
 {
     operation = 0,
-    constant  = 1,
-    var_num   = 2,
+    function  = 1,
+    constant  = 2,
+    var_num   = 3,
 } node_type_t;
 
 //————————————————————————————————————————————————————————————————————————————————

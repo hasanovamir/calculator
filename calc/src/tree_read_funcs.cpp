@@ -3,42 +3,13 @@
 //--------------------------------------------------------------------------------
 
 tree_node_t*
-GetP (char* buffer, int* pos);
-tree_node_t*
-GetT (char* buffer, int* pos);
-tree_node_t*
-GetE (char* buffer, int* pos);
-tree_node_t*
-GetN (char* buffer, int* pos);
-tree_node_t*
-GetG (char* buffer, int* pos);
-
-//--------------------------------------------------------------------------------
-
-int 
-main ()
+ReadTree (const char* buffer)
 {
-    char buffer[100] = "";
+    DEBUG_ASSERT (buffer != nullptr);
 
     int pos = 0;
 
-    scanf ("%s", buffer);
-
-    ClearDump ();
-
-    if (TreeInit ()) {
-        return TREE_ALLOC_ERR;
-    }
-
-    VariablesInit ();
-
-    tree_node_t* node = GetG (buffer, &pos);
-
-    TreeDump (node);
-
-    OptimizeTree (node);
-
-    TreeDump (node);
+    return GetG (buffer, &pos);
 }
 
 //--------------------------------------------------------------------------------
@@ -51,7 +22,12 @@ GetP (const char* buffer, int* pos)
 
         tree_node_t* node = GetE (buffer, pos);
 
-        pos++;
+        if (buffer[*pos] != ')') {
+            fprintf (stderr, "ERROR in GetP: Expected ')'\n");
+            return nullptr;
+        }
+
+        (*pos)++;
 
         return node;
     }
@@ -122,14 +98,12 @@ GetE (const char* buffer, int* pos)
 tree_node_t*
 GetN (const char* buffer, int* pos)
 {
-    tree_node_t* node = NEW_DATA_NODE (0);
-
     int prev_pos = *pos;
 
-    while (buffer[*pos] >= '0' && buffer[*pos] <= '9') {
-        node = NewNode (operation, MakeOperData (addition_op), 
-            NewNode (operation, MakeOperData (multiplication_op), node, NEW_DATA_NODE (10)), 
-            NEW_DATA_NODE (buffer[*pos] - '0'));
+    double val = 0;
+
+    while (isdigit (buffer[*pos])) {
+        val = val * 10 + buffer[*pos] - '0';
 
         (*pos)++;
     }
@@ -138,19 +112,17 @@ GetN (const char* buffer, int* pos)
         return nullptr;
     }
 
-    return node;
+    return NEW_DATA_NODE (val);
 }
 
 //--------------------------------------------------------------------------------
 
 tree_node_t*
-GetG (char* buffer, int* pos)
+GetG (const char* buffer, int* pos)
 {
     tree_node_t* node = GetE (buffer, pos);
 
     if (buffer[*pos] != '$') {
-        (*pos)++;
-
         return nullptr;
     }
 
@@ -167,14 +139,15 @@ GetF (const char* buffer, int* pos)
     int oper_num = -1;
 
     for (int i = 0; i < NumOfOper; i++) {
-        if (strncmp (buffer, operations[i].oper, 
-            sizeof (operations[i].oper) / sizeof (operations[i].oper[0]))) {
+        if (strncmp (&buffer[*pos], operations[i].oper, 
+            strlen (operations[i].oper)) == 0) {
             oper_num = i;
             break;
         }
     }
 
     if (oper_num != -1) {
+        *pos += strlen (operations[oper_num].oper);
         return NewNode (operation, MakeOperData ((math_oper_t) oper_num),
                         GetE (buffer, pos), nullptr);
     }
@@ -273,3 +246,36 @@ GetRoot (const char* buffer, int* pos)
 
 //--------------------------------------------------------------------------------
 
+tree_node_t*
+GetLog (const char* buffer, int* pos)
+{
+    if (strncmp (&buffer[*pos], "log", 3) == 0) {
+        (*pos) += 3;
+        
+        if (buffer[*pos] == '(') {
+            (*pos)++;
+
+            tree_node_t* node_1 = GetE (buffer, pos);
+
+            if (buffer[*pos] != ',') {
+                return nullptr;
+            }
+
+            (*pos)++;
+
+            tree_node_t* node_2 = GetE (buffer, pos);
+            
+            if (buffer[*pos] != ')') {
+                return nullptr;
+            }
+
+            (*pos)++;
+            
+            return NewNode (operation, MakeOperData (logarithm_op), node_1, node_2);
+        }
+    }
+
+    return nullptr;
+}
+
+//--------------------------------------------------------------------------------

@@ -18,8 +18,6 @@ TreeInit ()
         return TREE_ALLOC_ERR;
     }
 
-    tree_context.head->idx = 0;
-
     return TREE_SUCCESS;
 }
 

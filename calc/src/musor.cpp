@@ -3,7 +3,7 @@
 //--------------------------------------------------------------------------------
 
 tree_data_t
-MakeOperData(math_oper_t oper)
+MakeOperData (math_oper_t oper)
 {
     tree_data_t data;
     
@@ -15,12 +15,24 @@ MakeOperData(math_oper_t oper)
 //--------------------------------------------------------------------------------
 
 tree_data_t
-MakeDigitData(double value)
+MakeDigitData (double value)
 {
     tree_data_t data;
 
     data.immediate = value;
 
+    return data;
+}
+
+//--------------------------------------------------------------------------------
+
+tree_data_t
+MakeVarData (int oper_num)
+{
+    tree_data_t data;
+    
+    data.var_number = oper_num;
+    
     return data;
 }
 
@@ -46,6 +58,32 @@ CheckForVariables (tree_node_t* node)
     }
 
     return 0;
+}
+
+//--------------------------------------------------------------------------------
+
+int
+GetVarNumber (const char* name)
+{
+    for (int i = 0; i < variables_ctx.count; i++) {
+        if (strcmp (name, variables_ctx.variable_arr[i].name)) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+//--------------------------------------------------------------------------------
+
+int
+AddVar (const char* name)
+{
+    strcpy (variables_ctx.variable_arr[variables_ctx.count].name, name);
+
+    variables_ctx.count++;
+
+    return variables_ctx.count - 1;
 }
 
 //--------------------------------------------------------------------------------

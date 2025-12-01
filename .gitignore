@@ -1,0 +1,10 @@
+*.exe
+Makefile
+*.html
+*.txt
+*.out
+TeX/*.tex
+svg/*.svg
+pdf/*.pdf
+dot/*.dot
+.VSCodeCounter/

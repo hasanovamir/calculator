@@ -54,6 +54,7 @@ void
 DotDumpNode (FILE* dot_file, tree_node_t* node)
 {
     DEBUG_ASSERT (dot_file != NULL);
+    DEBUG_ASSERT (node     != NULL);
 
     fprintf (dot_file, "\tnode%d [label=\"{<type> type = ", node->idx);
 
@@ -259,7 +260,7 @@ TexNodeWithPriority (FILE* tex_file, tree_node_t* node, int parent_priority)
         fprintf (tex_file, "(");
     }
 
-    if (node->type == operation) {
+    if (node->type == operation && node->node_data.operation <= exponentiation_op) {
 
         const char* op_str = operations[node->node_data.operation].oper;
 
@@ -268,8 +269,38 @@ TexNodeWithPriority (FILE* tex_file, tree_node_t* node, int parent_priority)
         fprintf(tex_file, " %s ", op_str);
 
         int right_priority = (node->node_data.operation == exponentiation_op) ? 
-                                cur_priority : cur_priority + 1;
+                                cur_priority : cur_priority + 1; //x^(x^x) чтоб скобка была
+
         TexNodeWithPriority(tex_file, node->right_node, right_priority);
+    }
+    else if (node->type == operation && node->node_data.operation > exponentiation_op) {
+        const char* op_str = operations[node->node_data.operation].oper;
+
+        fprintf(tex_file, "%s", op_str);
+
+        if (node->node_data.operation == root_op) {
+            fprintf (tex_file, "[");
+            TexNodeWithPriority (tex_file, node->left_node, cur_priority);
+            fprintf (tex_file, "]{");
+            int right_priority = (node->node_data.operation == exponentiation_op) ? 
+                                cur_priority : cur_priority + 1;
+            TexNodeWithPriority (tex_file, node->right_node, cur_priority);
+
+            return ;
+        }
+
+        if (node->node_data.operation == logarithm_op) {
+            fprintf (tex_file, "_{");
+            TexNodeWithPriority (tex_file, node->left_node, cur_priority);
+            fprintf (tex_file, "} ");
+            int right_priority = (node->node_data.operation == exponentiation_op) ? 
+                                cur_priority : cur_priority + 1;
+            TexNodeWithPriority (tex_file, node->right_node, cur_priority);
+
+            return ;
+        }
+
+        TexNodeWithPriority (tex_file, node->left_node, cur_priority);
     }
     else if (node->type == constant) {
         fprintf(tex_file, "%g", node->node_data.immediate);

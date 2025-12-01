@@ -6,9 +6,17 @@
 int 
 main (int argc, char** argv)
 {
-    CalculatorInit (argv[1]);
+    CalculatorInit (argv[1]); 
 
-    tree_node_t* ptr = DifferentiateNode (tree_context.head); 
+    char buffer[100] = "";
+
+    int pos = 0;
+
+    scanf ("%s", buffer);
+
+    tree_context.head = GetG (buffer, &pos);
+
+    tree_node_t* ptr = DifferentiateNode (tree_context.head);
 
     TreeDump (tree_context.head);
     TreeDump (ptr);

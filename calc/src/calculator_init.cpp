@@ -2,6 +2,10 @@
 
 //--------------------------------------------------------------------------------
 
+variable_ctx variables_ctx = {};
+
+//--------------------------------------------------------------------------------
+
 tree_err_t 
 CalculatorInit (const char* file_name)
 {
@@ -11,9 +15,7 @@ CalculatorInit (const char* file_name)
         return TREE_ALLOC_ERR;
     }
 
-    if (TreeReadDataBase (file_name)) {
-        return TREE_INVALID_FILE_SIZE;
-    }
+    VariablesInit ();
 
     return TREE_SUCCESS;
 }
@@ -59,3 +61,29 @@ ClearDump (void)
 }
 
 //--------------------------------------------------------------------------------
+
+tree_err_t
+VariablesInit (void)
+{
+    variables_ctx.variable_arr = (variable_t*) calloc (StartVarCap, sizeof (variable_t));
+
+    if (variables_ctx.variable_arr == nullptr) {
+        PRINTERR (TREE_ALLOC_ERR);
+        return TREE_ALLOC_ERR;
+    }
+
+    for (int i = 0; i < StartVarCap; i++) {
+        variables_ctx.variable_arr[i].name = (char*) calloc (COMMONSTRINGSIZE, sizeof (char));
+
+        if (variables_ctx.variable_arr[i].name == nullptr) {
+            PRINTERR (TREE_ALLOC_ERR);
+        return TREE_ALLOC_ERR;
+        }
+    }
+
+    variables_ctx.capacity = StartVarCap;
+
+    return TREE_SUCCESS;
+}
+
+//————————————————————————————————————————————————————————————————————————————————

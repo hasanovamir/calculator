@@ -1,8 +1,14 @@
 #ifndef CALCULATOR_H
 #define CALCULATOR_H
 
+//————————————————————————————————————————————————————————————————————————————————
+
 #include "tree.h"
 #include "common_dump.h"
+
+//————————————————————————————————————————————————————————————————————————————————
+
+const int StartVarCap = 10;
 
 //————————————————————————————————————————————————————————————————————————————————
 
@@ -14,7 +20,15 @@ struct variable_t {
 
 //————————————————————————————————————————————————————————————————————————————————
 
+struct variable_ctx {
+    variable_t* variable_arr;
+    int         count;
+    int         capacity;
+};
 
+//————————————————————————————————————————————————————————————————————————————————
+
+extern variable_ctx variables_ctx;
 
 //————————————————————————————————————————————————————————————————————————————————
 
@@ -44,19 +58,25 @@ const int NumOfOper = sizeof (operations) / sizeof (*operations);
 
 //————————————————————————————————————————————————————————————————————————————————
 
-int         CheckForVariables        (tree_node_t* node);
-int         OptimizeTree             (tree_node_t* node);
-int         OptimizeTreeIfBothConst  (tree_node_t* node);
-int         OptimizeTreeIfRightConst (tree_node_t* node);
-int         OptimizeTreeIfLeftConst  (tree_node_t* node);
-int         CheckToEquality          (double value_1, double value_2);
-void        ClearDump                (void);
-void        CopyNodeData             (tree_node_t* destination_node, tree_node_t* source_node);
-tree_data_t MakeDigitData            (double value);
-tree_data_t MakeOperData             (math_oper_t oper);
-tree_err_t  CalculatorInit           (const char* file_name);
+int          AddVar                   (const char*  name);
+int          GetVarNumber             (const char*  name);
+int          CheckForVariables        (tree_node_t* node);
+int          OptimizeTree             (tree_node_t* node);
+int          OptimizeTreeIfBothConst  (tree_node_t* node);
+int          OptimizeTreeIfRightConst (tree_node_t* node);
+int          OptimizeTreeIfLeftConst  (tree_node_t* node);
+int          CheckToEquality          (double value_1, double value_2);
+void         ClearDump                (void);
+void         CopyNodeData             (tree_node_t* destination_node, 
+                                       tree_node_t* source_node    );
+tree_err_t   VariablesInit            (void);
+tree_data_t  MakeVarData              (int         oper_num );
+tree_data_t  MakeDigitData            (double      value    );
+tree_data_t  MakeOperData             (math_oper_t oper     );
+tree_err_t   CalculatorInit           (const char* file_name);
+tree_node_t* ReadTree                 (const char* buffer   );
 
-//————————————————————————————————————————————————————————————————————————————————
+//——————————————————————————Differentiate funcs——————————————————————————————————————————————————————
 
 tree_node_t* DifferentiateNode           (tree_node_t* node);
 tree_node_t* CopyTree                    (tree_node_t* node);
@@ -82,7 +102,21 @@ tree_node_t* DifferentiateCh             (tree_node_t* node);
 tree_node_t* NewNode                     (node_type_t type, tree_data_t data, 
                                           tree_node_t* left, tree_node_t* right);
 
-//————————————————————————————————————————————————————————————————————————————————
+//———————————————————————————————reader—————————————————————————————————————————————————
+
+tree_node_t* GetP    (const char* buffer, int* pos);
+tree_node_t* GetT    (const char* buffer, int* pos);
+tree_node_t* GetE    (const char* buffer, int* pos);
+tree_node_t* GetN    (const char* buffer, int* pos);
+tree_node_t* GetG    (const char* buffer, int* pos);
+tree_node_t* GetF    (const char* buffer, int* pos);
+tree_node_t* GetV    (const char* buffer, int* pos);
+tree_node_t* GetA    (const char* buffer, int* pos);
+tree_node_t* GetExp  (const char* buffer, int* pos);
+tree_node_t* GetRoot (const char* buffer, int* pos);
+tree_node_t* GetLog  (const char* buffer, int* pos);
+
+//——————————————————————————macros to Differentiate——————————————————————————————————————————————————————
 
 #define d_(node) DifferentiateNode (node)
 #define c_(node) CopyTree          (node)
