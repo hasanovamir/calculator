@@ -33,14 +33,6 @@ list_err_t ListInit (list_t* list, int capacity)
         return   (LIST_ALLOCATE_ERR);
     }
 
-    list->prev = (int*) calloc (capacity, sizeof (int));
-
-    if (list->prev == NULL)
-    {
-        PRINTERR (LIST_ALLOCATE_ERR);
-        return   (LIST_ALLOCATE_ERR);
-    }
-
     MemSetList (list);
 
     return LIST_SUCCESS;
@@ -54,13 +46,10 @@ list_err_t IncreaseList (list_t* list)
 
     list_data_t* data_temp = NULL;
     int*         next_temp = NULL;
-    int*         prev_temp = NULL;
 
     data_temp = (list_data_t*) realloc (list->data, new_capacity * sizeof (list_data_t));
     next_temp = (int*)         realloc (list->next, new_capacity * sizeof (    int    ));
-    prev_temp = (int*)         realloc (list->prev, new_capacity * sizeof (    int    ));
 
-    if (data_temp == NULL || next_temp == NULL || prev_temp == NULL)
     {
         PRINTERR (LIST_ALLOCATE_ERR);
         return   (LIST_ALLOCATE_ERR);
@@ -68,7 +57,6 @@ list_err_t IncreaseList (list_t* list)
 
     list->data = data_temp;
     list->next = next_temp;
-    list->prev = prev_temp;
 
     list->free = list->capacity;
     list->capacity = new_capacity;
@@ -84,11 +72,9 @@ list_err_t ListDestroy (list_t* list)
 {
     free (list->data);
     free (list->next);
-    free (list->prev);
 
     list->data = NULL;
     list->next = NULL;
-    list->prev = NULL;
 
     return LIST_SUCCESS;
 }
@@ -100,17 +86,15 @@ void MemSetList (list_t* list)
     DEBUG_ASSERT (list       != NULL);
     DEBUG_ASSERT (list->data != NULL);
     DEBUG_ASSERT (list->next != NULL);
-    DEBUG_ASSERT (list->prev != NULL);
 
     int*         next_arr = list->next;
-    int*         prev_arr = list->prev;
     list_data_t* data_arr = list->data;
 
     int start_val = (list->size == 0) ? 0 : list->size + 1;
 
     for (int i = start_val; i < list->capacity; i++)
     {
-        prev_arr[i] = -1;
+
         next_arr[i] = i + 1;
         
         data_arr[i].node_data.immediate = POISON;
@@ -118,7 +102,7 @@ void MemSetList (list_t* list)
 
     if (list->size == 0) 
     {
-        prev_arr[0] = 0;
+
         next_arr[0] = 0;
     }
 

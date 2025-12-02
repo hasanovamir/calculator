@@ -1,5 +1,4 @@
 #include "calculator.h"
-#include "common_dump.h"
 
 //--------------------------------------------------------------------------------
 
@@ -114,9 +113,9 @@ TreeDump (tree_node_t* tree_node)
     char tex_file_name[MAXFILENAMESIZE];
     char command[MAXCOMMANDSIZE];
     
-    snprintf (dot_file_name, MAXFILENAMESIZE, "dot/%s_%d.dot", "call", tree_context.num_calls);
-    snprintf (svg_file_name, MAXFILENAMESIZE, "svg/%s_%d.svg", "call", tree_context.num_calls);
-    snprintf (tex_file_name, MAXFILENAMESIZE, "TeX/%s_%d.tex", "call", tree_context.num_calls);
+    snprintf (dot_file_name, MAXFILENAMESIZE, "dump/dot/%s_%d.dot", "call", tree_context.num_calls);
+    snprintf (svg_file_name, MAXFILENAMESIZE, "dump/svg/%s_%d.svg", "call", tree_context.num_calls);
+    snprintf (tex_file_name, MAXFILENAMESIZE, "dump/Tex/%s_%d.tex", "call", tree_context.num_calls);
     
     if (FillDotFile (tree_node, dot_file_name))
     {
@@ -144,11 +143,11 @@ TreeDump (tree_node_t* tree_node)
         return TREE_SUCCESS;
     }
 
-    snprintf (command, sizeof(command), "pdflatex -output-directory=pdf -interaction=nonstopmode %s > /dev/null 2>&1", tex_file_name);
+    snprintf (command, sizeof(command), "pdflatex -output-directory=dump/pdf -interaction=nonstopmode %s > /dev/null 2>&1", tex_file_name);
 
     if (system (command) == 0) {
         printf ("Generated TEX image: %s\n\n", tex_file_name);
-        snprintf (command, sizeof(command), "rm pdf/call_%d.aux pdf/call_%d.log", 
+        snprintf (command, sizeof(command), "rm dump/pdf/call_%d.aux dump/pdf/call_%d.log", 
             tree_context.num_calls, tree_context.num_calls);
         system (command);
     }
@@ -165,7 +164,7 @@ TreeDump (tree_node_t* tree_node)
 tree_err_t 
 TreeStartFillHtml (void)
 {
-    FILE* html_file = fopen ("tree_dump.html", "w");
+    FILE* html_file = fopen ("dump/tree_dump.html", "w");
 
     if (html_file == NULL)
     {
@@ -185,7 +184,7 @@ TreeStartFillHtml (void)
 tree_err_t 
 TreeFillHtml (const char* file_name)
 {
-    FILE* html_file = fopen ("tree_dump.html", "a");
+    FILE* html_file = fopen ("dump/tree_dump.html", "a");
 
     if (html_file == NULL)
     {
@@ -210,7 +209,7 @@ TreeFillHtml (const char* file_name)
 tree_err_t 
 TreeEndFillHtml (void)
 {
-    FILE* html_file = fopen ("tree_dump.html", "a");
+    FILE* html_file = fopen ("dump/tree_dump.html", "a");
 
     if (html_file == NULL)
     {

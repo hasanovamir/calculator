@@ -49,10 +49,10 @@ ClearDump (void)
     char command_3[COMMONSTRINGSIZE] = "";
     char command_4[COMMONSTRINGSIZE] = "";
 
-    snprintf (command_1, COMMONSTRINGSIZE, "rm svg/*.svg");
-    snprintf (command_2, COMMONSTRINGSIZE, "rm dot/*.dot");
-    snprintf (command_3, COMMONSTRINGSIZE, "rm TeX/*.tex");
-    snprintf (command_4, COMMONSTRINGSIZE, "rm pdf/*.pdf");
+    snprintf (command_1, COMMONSTRINGSIZE, "rm dump/svg/*.svg");
+    snprintf (command_2, COMMONSTRINGSIZE, "rm dump/dot/*.dot");
+    snprintf (command_3, COMMONSTRINGSIZE, "rm dump/TeX/*.tex");
+    snprintf (command_4, COMMONSTRINGSIZE, "rm dump/pdf/*.pdf");
 
     system (command_1);
     system (command_2);

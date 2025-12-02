@@ -3,8 +3,9 @@ Makefile
 *.html
 *.txt
 *.out
-TeX/*.tex
-svg/*.svg
-pdf/*.pdf
-dot/*.dot
+dump/TeX/*.tex
+dump/svg/*.svg
+dump/pdf/*.pdf
+dump/dot/*.dot
+dump/png/*.svg
 .VSCodeCounter/

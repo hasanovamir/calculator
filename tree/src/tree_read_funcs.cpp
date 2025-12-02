@@ -159,7 +159,7 @@ GetF (const char* buffer, int* pos)
 
 tree_node_t*
 GetV (const char* buffer, int* pos)
-{
+{printf ("GetV\n");
     if (isdigit (buffer[*pos])) {
         return nullptr;
     }

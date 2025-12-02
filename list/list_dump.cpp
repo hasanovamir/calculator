@@ -20,11 +20,11 @@ list_err_t FillDotFile (list_t* list, const char* file_name)
     {
         if (list->data[i].node_data.immediate == POISON)
         {
-            MakeDumpNode (dot_file, i, i, list->data[i], list->prev[i], list->next[i], "yellow");
+            MakeDumpNode (dot_file, i, i, list->data[i], list->next[i], "yellow");
         }
         else
         {
-            MakeDumpNode (dot_file, i, i, list->data[i], list->prev[i], list->next[i], "lime");
+            MakeDumpNode (dot_file, i, i, list->data[i], list->next[i], "lime");
         }
     }
 
@@ -42,9 +42,6 @@ list_err_t FillDotFile (list_t* list, const char* file_name)
         else // connection of ordinary members
         {
             MakeDumpEdge (dot_file, i, list->next[i], "blue" );
-            if (list->prev[i] != -1) {
-                MakeDumpEdge (dot_file, i, list->prev[i], "green");
-            }
         }
     }
     
@@ -77,17 +74,17 @@ R"(digraph ListDump {
 
 //--------------------------------------------------------------------------------
 
-void MakeDumpNode (FILE* dot_file, int node_number, int idx, list_data_t data, int prev, int next, const char* color)
+void MakeDumpNode (FILE* dot_file, int node_number, int idx, list_data_t data, int next, const char* color)
 {
     DEBUG_ASSERT (dot_file != NULL);
     DEBUG_ASSERT (color    != NULL);
 
     if (data.node_data.immediate == POISON)
-        fprintf(dot_file, "\tnode%d [label=\"<idx> idx:%d | <data> data:PSN | <prev> prev:%d | <next> next:%d\", style=filled, color=%s];\n", 
-            node_number, idx, prev, next, color);
+        fprintf(dot_file, "\tnode%d [label=\"<idx> idx:%d | <data> data:PSN | <next> next:%d\", style=filled, color=%s];\n", 
+            node_number, idx, next, color);
     else
-            fprintf(dot_file, "\tnode%d [label=\"<idx> idx:%d | <data> data:%lf | <prev> prev:%d | <next> next:%d\", style=filled, color=%s];\n", 
-            node_number, idx, data.node_data.immediate, prev, next, color);
+            fprintf(dot_file, "\tnode%d [label=\"<idx> idx:%d | <data> data:%lf | <next> next:%d\", style=filled, color=%s];\n", 
+            node_number, idx, data.node_data.immediate, next, color);
 }
 
 //--------------------------------------------------------------------------------
@@ -113,8 +110,8 @@ list_err_t ListDump (list_t* list)
     char png_file_name[MAXFILENAMESIZE];
     char command[MAXCOMMANDSIZE];
     
-    snprintf(dot_file_name, MAXFILENAMESIZE, "dot/%s_%d.dot", "call", list->num_calls);
-    snprintf(png_file_name, MAXFILENAMESIZE, "png/%s_%d.svg", "call", list->num_calls);
+    snprintf(dot_file_name, MAXFILENAMESIZE, "dump/dot/%s_%d.dot", "call", list->num_calls);
+    snprintf(png_file_name, MAXFILENAMESIZE, "dump/png/%s_%d.svg", "call", list->num_calls);
     
     if (FillDotFile (list, dot_file_name))
     {
@@ -147,7 +144,7 @@ list_err_t ListDump (list_t* list)
 
 list_err_t ListStartFillHtml (void)
 {
-    FILE* html_file = fopen ("list_dump.html", "w");
+    FILE* html_file = fopen ("dump/list_dump.html", "w");
 
     if (html_file == NULL)
     {
@@ -166,7 +163,7 @@ list_err_t ListStartFillHtml (void)
 
 list_err_t ListFillHtml (list_t* list, const char* file_name)
 {
-    FILE* html_file = fopen ("list_dump.html", "a");
+    FILE* html_file = fopen ("dump/list_dump.html", "a");
 
     if (html_file == NULL)
     {
@@ -190,7 +187,7 @@ list_err_t ListFillHtml (list_t* list, const char* file_name)
 
 list_err_t ListEndFillHtml (void)
 {
-    FILE* html_file = fopen ("list_dump.html", "a");
+    FILE* html_file = fopen ("dump/list_dump.html", "a");
 
     if (html_file == NULL)
     {

@@ -74,7 +74,6 @@ tree_data_t  MakeVarData              (int         oper_num );
 tree_data_t  MakeDigitData            (double      value    );
 tree_data_t  MakeOperData             (math_oper_t oper     );
 tree_err_t   CalculatorInit           (const char* file_name);
-tree_node_t* ReadTree                 (const char* buffer   );
 
 //——————————————————————————Differentiate funcs——————————————————————————————————————————————————————
 
@@ -101,20 +100,6 @@ tree_node_t* DifferentiateSh             (tree_node_t* node);
 tree_node_t* DifferentiateCh             (tree_node_t* node);
 tree_node_t* NewNode                     (node_type_t type, tree_data_t data, 
                                           tree_node_t* left, tree_node_t* right);
-
-//———————————————————————————————reader—————————————————————————————————————————————————
-
-tree_node_t* GetP    (const char* buffer, int* pos);
-tree_node_t* GetT    (const char* buffer, int* pos);
-tree_node_t* GetE    (const char* buffer, int* pos);
-tree_node_t* GetN    (const char* buffer, int* pos);
-tree_node_t* GetG    (const char* buffer, int* pos);
-tree_node_t* GetF    (const char* buffer, int* pos);
-tree_node_t* GetV    (const char* buffer, int* pos);
-tree_node_t* GetA    (const char* buffer, int* pos);
-tree_node_t* GetExp  (const char* buffer, int* pos);
-tree_node_t* GetRoot (const char* buffer, int* pos);
-tree_node_t* GetLog  (const char* buffer, int* pos);
 
 //——————————————————————————macros to Differentiate——————————————————————————————————————————————————————
 
