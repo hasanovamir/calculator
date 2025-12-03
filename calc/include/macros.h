@@ -7,12 +7,12 @@
 
 //————————————————————————————————————————————————————————————————————————————————
 
-const int MAXSTRINGSIZE    = 256;
-const int MAXCOMMANDSIZE   = 128;
-const int MAXFILENAMESIZE  = 32;
+const int MaxStringSize    = 256;
+const int MaxCommandSize   = 128;
+const int MaxFileNameSize  = 32;
 const int AllocCapacity    = 512;
-const int COMMONSTACKSIZE  = 128;
-const int COMMONSTRINGSIZE = 100;
+const int CommonStackSize  = 128;
+const int CommonStringSize = 128;
 const int StartBigArrayCap = 8;
 
 //————————————————————————————————————————————————————————————————————————————————

@@ -1,59 +1,13 @@
 #include "calculator.h"
 
 //--------------------------------------------------------------------------------
-typedef tree_node_t* (*deriv_method_t)(tree_node_t *);
+
 tree_node_t*
-DifferentiateNode (tree_node_t* node)
+DifferentiateNode (tree_node_t* node, int arg)
 {
     DEBUG_ASSERT (node != nullptr);
 
-    switch (node->type) {
-        case constant:
-            return DifferentiateConst (node);
-        case var_num:
-            return DifferentiateVariable (node);
-        case operation:
-            switch (node->node_data.operation) {
-                case addition_op:
-                    return DifferentiateAddition (node);
-                case difference_op:
-                    return DifferentiateDifference (node);
-                case multiplication_op:
-                    return DifferentiateMultiplication (node);
-                case division_op:
-                    return DifferentiateDivision (node);
-                case exponentiation_op:
-                    return DifferentiateExponential (node);
-                case root_op:
-                    return DifferentiateRoot (node);
-                case logarithm_op:
-                    return DifferentiateLog (node);
-                case sin_op:
-                    return DifferentiateSin (node);
-                case cos_op:
-                    return DifferentiateCos (node);
-                case tg_op:
-                    return DifferentiateTg (node);
-                case ctg_op:
-                    return DifferentiateCtg (node);
-                case arcsin_op:
-                    return DifferentiateArcsin (node);
-                case arccos_op:
-                    return DifferentiateArccos (node);
-                case arctg_op:
-                    return DifferentiateArctg (node);
-                case arcctg_op:
-                    return DifferentiateArcctg (node);
-                case sh_op:
-                    return DifferentiateSh (node);
-                case ch_op:
-                    return DifferentiateCh (node);
-                default:
-                    return nullptr;
-            }
-        default:
-            return nullptr;
-    }
+    return node->deriv_method (node, arg);
 }
 
 //--------------------------------------------------------------------------------
@@ -88,7 +42,7 @@ CopyTree (tree_node_t* node)
 //--------------------------------------------------------------------------------
 
 tree_node_t* 
-DifferentiateConst (tree_node_t* node)
+DifferentiateConst (tree_node_t* node, int arg)
 {
     return NEW_DATA_NODE (0);
 }
@@ -97,57 +51,62 @@ DifferentiateConst (tree_node_t* node)
 
 
 tree_node_t* 
-DifferentiateVariable (tree_node_t* node)
+DifferentiateVariable (tree_node_t* node, int arg)
 {
-    return NEW_DATA_NODE (1);
+    if (node->node_data.var_number == arg) {
+        return NEW_DATA_NODE (1);
+    }
+    else {
+        return NEW_DATA_NODE (0);
+    }
 }
 
 //--------------------------------------------------------------------------------
 
 tree_node_t* 
-DifferentiateAddition (tree_node_t* node)
+DifferentiateAddition (tree_node_t* node, int arg)
 {
-    return ADD_ (d_ (node->left_node), d_ (node->right_node));
+    return ADD_ (d_ (node->left_node, arg), d_ (node->right_node, arg));
 }
 
 //--------------------------------------------------------------------------------
 
 tree_node_t* 
-DifferentiateDifference (tree_node_t* node)
+DifferentiateDifference (tree_node_t* node, int arg)
 {
-    return DIF_ (d_ (node->left_node), d_ (node->right_node));
+    return DIF_ (d_ (node->left_node, arg), d_ (node->right_node, arg));
 }
 
 //--------------------------------------------------------------------------------
 
 tree_node_t* 
-DifferentiateMultiplication (tree_node_t* node)
+DifferentiateMultiplication (tree_node_t* node, int arg)
 {
-    return ADD_ (MUL_ (d_ (node->left_node), c_ (node->right_node)), 
-                 MUL_ (c_ (node->left_node), d_ (node->right_node))); 
+    return ADD_ (MUL_ (d_ (node->left_node, arg), c_ (node->right_node)), 
+                 MUL_ (c_ (node->left_node), d_ (node->right_node, arg))); 
 }
 
 //--------------------------------------------------------------------------------
 
 tree_node_t* 
-DifferentiateDivision (tree_node_t* node)
+DifferentiateDivision (tree_node_t* node, int arg)
 {
-    return DIV_ (DIF_ (MUL_ (d_ (node->left_node), c_ (node->right_node)), 
-                       MUL_ (c_ (node->left_node), d_ (node->right_node))), 
+    return DIV_ (DIF_ (MUL_ (d_ (node->left_node, arg), c_ (node->right_node)), 
+                       MUL_ (c_ (node->left_node), d_ (node->right_node, arg))), 
                  EXP_ (c_ (node->right_node), NEW_DATA_NODE (2)));
 }
 
 //--------------------------------------------------------------------------------
 
 tree_node_t* 
-DifferentiateExponential (tree_node_t* node)
+DifferentiateExponential (tree_node_t* node, int arg)
 {
     // d(g^f) = f * g^(f-1) * dg + g^f * ln(g) * df
     tree_node_t* g = c_ (node->left_node);
     tree_node_t* f = c_ (node->right_node);
     
-    tree_node_t* summand_1 = MUL_ (MUL_ (c_ (node->right_node), EXP_ (c_ (node->left_node),  DIF_ (c_ (node->right_node), NEW_DATA_NODE (1)  ))), d_ (node->left_node ));
-    tree_node_t* summand_2 = MUL_ (MUL_ (EXP_ (c_ (node->left_node), c_ (node->right_node)), LOG_ (c_ (node->left_node), NEW_DATA_NODE (2.71))), d_ (node->right_node));
+    tree_node_t* summand_1 = MUL_ (MUL_ (c_ (node->right_node), EXP_ (c_ (node->left_node),  DIF_ (c_ (node->right_node), NEW_DATA_NODE (1)  ))), d_ (node->left_node,  arg));
+    tree_node_t* summand_2 = MUL_ (MUL_ (EXP_ (c_ (node->left_node), c_ (node->right_node)), LOG_ (c_ (node->left_node), NEW_DATA_NODE (2.71 ))), d_ (node->right_node, arg));
     
     return ADD_(summand_1, summand_2);
 }
@@ -155,7 +114,7 @@ DifferentiateExponential (tree_node_t* node)
 //--------------------------------------------------------------------------------
 
 tree_node_t* 
-DifferentiateRoot (tree_node_t* node)
+DifferentiateRoot (tree_node_t* node, int arg)
 {
     // d(u^(1/n)) = (1/n) * u^((1/n)-1) * du
     // for n = f(x) need to use exponential
@@ -165,18 +124,18 @@ DifferentiateRoot (tree_node_t* node)
     tree_node_t* one_over_n = DIV_ (NEW_DATA_NODE (1), n);
     tree_node_t* degrees    = DIF_ (one_over_n, NEW_DATA_NODE (1));
     
-    return MUL_ (MUL_ (one_over_n, EXP_ (u, degrees)), d_ (node->left_node));
+    return MUL_ (MUL_ (one_over_n, EXP_ (u, degrees)), d_ (node->left_node, arg));
 }
 
 //--------------------------------------------------------------------------------
 
 tree_node_t* 
-DifferentiateLog (tree_node_t* node)
+DifferentiateLog (tree_node_t* node, int arg)
 {
     // d(log[a](u)) = du / (u * ln(a))
     tree_node_t* u  = c_ (node->left_node );
     tree_node_t* a  = c_ (node->right_node);
-    tree_node_t* du = d_ (node->left_node );
+    tree_node_t* du = d_ (node->left_node, arg);
     
     return DIV_ (du, MUL_ (u, LOG_ (a, nullptr)));
 }
@@ -184,18 +143,18 @@ DifferentiateLog (tree_node_t* node)
 //--------------------------------------------------------------------------------
 
 tree_node_t* 
-DifferentiateSin (tree_node_t* node)
+DifferentiateSin (tree_node_t* node, int arg)
 {    
-    return MUL_ (COS_ (c_ (node->left_node)), d_ (node->left_node));
+    return MUL_ (COS_ (c_ (node->left_node)), d_ (node->left_node, arg));
 }
 
 //--------------------------------------------------------------------------------
 
 tree_node_t* 
-DifferentiateCos (tree_node_t* node)
+DifferentiateCos (tree_node_t* node, int arg)
 {
     tree_node_t* u  = c_ (node->left_node);
-    tree_node_t* du = d_ (node->left_node);
+    tree_node_t* du = d_ (node->left_node, arg);
     
     return MUL_ (MUL_ (NEW_DATA_NODE (-1), SIN_ (u)), du);
 }
@@ -203,11 +162,11 @@ DifferentiateCos (tree_node_t* node)
 //--------------------------------------------------------------------------------
 
 tree_node_t* 
-DifferentiateTg (tree_node_t* node)
+DifferentiateTg (tree_node_t* node, int arg)
 {
     // d(tg u) = du / cos^2 u
     tree_node_t* u  = c_ (node->left_node);
-    tree_node_t* du = d_ (node->left_node);
+    tree_node_t* du = d_ (node->left_node, arg);
     
     return DIV_ (du, EXP_ (COS_ (u), NEW_DATA_NODE (2)));
 }
@@ -215,11 +174,11 @@ DifferentiateTg (tree_node_t* node)
 //--------------------------------------------------------------------------------
 
 tree_node_t* 
-DifferentiateCtg (tree_node_t* node)
+DifferentiateCtg (tree_node_t* node, int arg)
 {
     // d(ctg u) = -du / sin^2 u
     tree_node_t* u  = c_ (node->left_node);
-    tree_node_t* du = d_ (node->left_node);
+    tree_node_t* du = d_ (node->left_node, arg);
     
     return MUL_ (NEW_DATA_NODE (-1), DIV_ (du, EXP_ (SIN_ (u), NEW_DATA_NODE (2))));
 }
@@ -227,11 +186,11 @@ DifferentiateCtg (tree_node_t* node)
 //--------------------------------------------------------------------------------
 
 tree_node_t* 
-DifferentiateArcsin (tree_node_t* node)
+DifferentiateArcsin (tree_node_t* node, int arg)
 {
     // d(arcsin u) = du / sqrt(1 - u^2)
     tree_node_t* u  = c_ (node->left_node);
-    tree_node_t* du = d_ (node->left_node);
+    tree_node_t* du = d_ (node->left_node, arg);
     
     tree_node_t* one_minus_u2 = DIF_ (NEW_DATA_NODE (1), EXP_ (u, NEW_DATA_NODE (2)));
     
@@ -241,11 +200,11 @@ DifferentiateArcsin (tree_node_t* node)
 //--------------------------------------------------------------------------------
 
 tree_node_t* 
-DifferentiateArccos (tree_node_t* node)
+DifferentiateArccos (tree_node_t* node, int arg)
 {
     // d(arccos u) = -du / sqrt(1 - u^2)
     tree_node_t* u  = c_ (node->left_node);
-    tree_node_t* du = d_ (node->left_node);
+    tree_node_t* du = d_ (node->left_node, arg);
     
     tree_node_t* one_minus_u2 = DIF_ (NEW_DATA_NODE (1), EXP_ (u, NEW_DATA_NODE (2)));
     
@@ -255,11 +214,11 @@ DifferentiateArccos (tree_node_t* node)
 //--------------------------------------------------------------------------------
 
 tree_node_t* 
-DifferentiateArctg (tree_node_t* node)
+DifferentiateArctg (tree_node_t* node, int arg)
 {
     // d(arctg u) = du / (1 + u^2)
     tree_node_t* u  = c_ (node->left_node);
-    tree_node_t* du = d_ (node->left_node);
+    tree_node_t* du = d_ (node->left_node, arg);
     
     return DIV_ (du, ADD_ (NEW_DATA_NODE (1), EXP_ (u, NEW_DATA_NODE (2))));
 }
@@ -267,11 +226,11 @@ DifferentiateArctg (tree_node_t* node)
 //--------------------------------------------------------------------------------
 
 tree_node_t* 
-DifferentiateArcctg (tree_node_t* node)
+DifferentiateArcctg (tree_node_t* node, int arg)
 {
     // d(arcctg u) = -du / (1 + u^2)
     tree_node_t* u  = c_ (node->left_node);
-    tree_node_t* du = d_ (node->left_node);
+    tree_node_t* du = d_ (node->left_node, arg);
     
     tree_node_t* one_plus_u2 = ADD_ (NEW_DATA_NODE (1), EXP_ (u, NEW_DATA_NODE (2)));
     
@@ -281,17 +240,17 @@ DifferentiateArcctg (tree_node_t* node)
 //--------------------------------------------------------------------------------
 
 tree_node_t* 
-DifferentiateSh (tree_node_t* node)
+DifferentiateSh (tree_node_t* node, int arg)
 {
-    return MUL_ (CH_ (c_ (node->left_node)), d_ (node->left_node));
+    return MUL_ (CH_ (c_ (node->left_node)), d_ (node->left_node, arg));
 }
 
 //--------------------------------------------------------------------------------
 
 tree_node_t* 
-DifferentiateCh (tree_node_t* node)
+DifferentiateCh (tree_node_t* node, int arg)
 {
-    return MUL_ (SH_ (c_ (node->left_node)), d_ (node->left_node));
+    return MUL_ (SH_ (c_ (node->left_node)), d_ (node->left_node, arg));
 }
 
 //--------------------------------------------------------------------------------

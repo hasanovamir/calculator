@@ -26,13 +26,6 @@ typedef enum {
 
 //————————————————————————————————————————————————————————————————————————————————
 
-struct math_oper_cont_t {
-    const char* oper_name;
-    const char* oper;
-};
-
-//————————————————————————————————————————————————————————————————————————————————
-
 typedef union {
     int         var_number;
     double      immediate;
@@ -65,12 +58,21 @@ typedef enum
 //————————————————————————————————————————————————————————————————————————————————
 
 struct tree_node_t {
-    int          idx;
-    node_type_t  type;
-    tree_data_t  node_data;
-    tree_node_t* prev_node;
-    tree_node_t* left_node;
-    tree_node_t* right_node;
+    int            idx;
+    node_type_t    type;
+    tree_data_t    node_data;
+    tree_node_t*   prev_node;
+    tree_node_t*   left_node;
+    tree_node_t*   right_node;
+    tree_node_t* (*deriv_method) (tree_node_t*, int);
+};
+
+//————————————————————————————————————————————————————————————————————————————————
+
+struct math_oper_cont_t {
+    const char* oper_name;
+    const char* oper;
+    tree_node_t* (*deriv_method) (tree_node_t*, int);
 };
 
 //————————————————————————————————————————————————————————————————————————————————

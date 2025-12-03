@@ -166,7 +166,7 @@ GetV (const char* buffer, int* pos)
 
     int i = 0;
 
-    char name[COMMONSTRINGSIZE] = "";
+    char name[CommonStringSize] = "";
 
     while (isdigit (buffer[*pos]) || isalpha (buffer[*pos]) || buffer[*pos] == '_') {
         name[i] = buffer[*pos];

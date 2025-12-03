@@ -108,14 +108,14 @@ TreeDump (tree_node_t* tree_node)
 {
     tree_context.num_calls++;
 
-    char dot_file_name[MAXFILENAMESIZE];
-    char svg_file_name[MAXFILENAMESIZE];
-    char tex_file_name[MAXFILENAMESIZE];
-    char command[MAXCOMMANDSIZE];
+    char dot_file_name[MaxFileNameSize];
+    char svg_file_name[MaxFileNameSize];
+    char tex_file_name[MaxFileNameSize];
+    char command[MaxCommandSize];
     
-    snprintf (dot_file_name, MAXFILENAMESIZE, "dump/dot/%s_%d.dot", "call", tree_context.num_calls);
-    snprintf (svg_file_name, MAXFILENAMESIZE, "dump/svg/%s_%d.svg", "call", tree_context.num_calls);
-    snprintf (tex_file_name, MAXFILENAMESIZE, "dump/Tex/%s_%d.tex", "call", tree_context.num_calls);
+    snprintf (dot_file_name, MaxFileNameSize, "dump/dot/%s_%d.dot", "call", tree_context.num_calls);
+    snprintf (svg_file_name, MaxFileNameSize, "dump/svg/%s_%d.svg", "call", tree_context.num_calls);
+    snprintf (tex_file_name, MaxFileNameSize, "dump/Tex/%s_%d.tex", "call", tree_context.num_calls);
     
     if (FillDotFile (tree_node, dot_file_name))
     {
@@ -192,9 +192,9 @@ TreeFillHtml (const char* file_name)
         return   (TREE_OPEN_FILE_ERR);
     }
 
-    char string[MAXSTRINGSIZE] = "";
+    char string[MaxStringSize] = "";
 
-    snprintf (string, MAXSTRINGSIZE, "\t<h2>CALL = #%d</h2>\n\t<p>HEAD = %p</p>\n\t<img src=\"%s\">\n\n", 
+    snprintf (string, MaxStringSize, "\t<h2>CALL = #%d</h2>\n\t<p>HEAD = %p</p>\n\t<img src=\"%s\">\n\n", 
         tree_context.num_calls, tree_context.head, file_name);
 
     fprintf (html_file, "%s", string);

@@ -35,6 +35,16 @@ NewNode (node_type_t type, tree_data_t data, tree_node_t* left, tree_node_t* rig
 
     new_node->left_node  = left;
     new_node->right_node = right;
+    
+    if      (type == constant) {
+        new_node->deriv_method = &DifferentiateConst;
+    }
+    else if (type == var_num) {
+        new_node->deriv_method = &DifferentiateVariable;
+    }
+    else {
+        new_node->deriv_method = operations[data.operation].deriv_method;
+    }
 
     return new_node;
 }
@@ -44,15 +54,15 @@ NewNode (node_type_t type, tree_data_t data, tree_node_t* left, tree_node_t* rig
 void 
 ClearDump (void)
 {
-    char command_1[COMMONSTRINGSIZE] = "";
-    char command_2[COMMONSTRINGSIZE] = "";
-    char command_3[COMMONSTRINGSIZE] = "";
-    char command_4[COMMONSTRINGSIZE] = "";
+    char command_1[CommonStringSize] = "";
+    char command_2[CommonStringSize] = "";
+    char command_3[CommonStringSize] = "";
+    char command_4[CommonStringSize] = "";
 
-    snprintf (command_1, COMMONSTRINGSIZE, "rm dump/svg/*.svg");
-    snprintf (command_2, COMMONSTRINGSIZE, "rm dump/dot/*.dot");
-    snprintf (command_3, COMMONSTRINGSIZE, "rm dump/TeX/*.tex");
-    snprintf (command_4, COMMONSTRINGSIZE, "rm dump/pdf/*.pdf");
+    snprintf (command_1, CommonStringSize, "rm dump/svg/*.svg");
+    snprintf (command_2, CommonStringSize, "rm dump/dot/*.dot");
+    snprintf (command_3, CommonStringSize, "rm dump/TeX/*.tex");
+    snprintf (command_4, CommonStringSize, "rm dump/pdf/*.pdf");
 
     system (command_1);
     system (command_2);
@@ -73,7 +83,7 @@ VariablesInit (void)
     }
 
     for (int i = 0; i < StartVarCap; i++) {
-        variables_ctx.variable_arr[i].name = (char*) calloc (COMMONSTRINGSIZE, sizeof (char));
+        variables_ctx.variable_arr[i].name = (char*) calloc (CommonStringSize, sizeof (char));
 
         if (variables_ctx.variable_arr[i].name == nullptr) {
             PRINTERR (TREE_ALLOC_ERR);

@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-#include "stack.h"
+#include <math.h>
 #include "tree_types.h"
 #include "list.h"
 

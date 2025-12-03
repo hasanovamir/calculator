@@ -106,12 +106,12 @@ list_err_t ListDump (list_t* list)
 {
     list->num_calls++;
 
-    char dot_file_name[MAXFILENAMESIZE];
-    char png_file_name[MAXFILENAMESIZE];
-    char command[MAXCOMMANDSIZE];
+    char dot_file_name[MaxFileNameSize];
+    char png_file_name[MaxFileNameSize];
+    char command[MaxCommandSize];
     
-    snprintf(dot_file_name, MAXFILENAMESIZE, "dump/dot/%s_%d.dot", "call", list->num_calls);
-    snprintf(png_file_name, MAXFILENAMESIZE, "dump/png/%s_%d.svg", "call", list->num_calls);
+    snprintf(dot_file_name, MaxFileNameSize, "dump/dot/%s_%d.dot", "call", list->num_calls);
+    snprintf(png_file_name, MaxFileNameSize, "dump/png/%s_%d.svg", "call", list->num_calls);
     
     if (FillDotFile (list, dot_file_name))
     {
@@ -120,7 +120,7 @@ list_err_t ListDump (list_t* list)
 
     printf("Generated DOT file:  %s\n", dot_file_name);
     
-    snprintf(command, MAXCOMMANDSIZE, "dot -Tsvg %s -o %s", dot_file_name, png_file_name);
+    snprintf(command, MaxCommandSize, "dot -Tsvg %s -o %s", dot_file_name, png_file_name);
 
     int result = system(command);
     
@@ -171,9 +171,9 @@ list_err_t ListFillHtml (list_t* list, const char* file_name)
         return   (LIST_OPEN_FILE_ERR);
     }
 
-    char string[MAXSTRINGSIZE] = "";
+    char string[MaxStringSize] = "";
 
-    snprintf (string, MAXSTRINGSIZE, "\t<h2>CALL = #%d</h2>\n\t<p>HEAD = %d</p>\n\t<p>TAIL = %d</p>\n\t<p>FREE = %d</p>\n\t<p>CAPACITY = %d</p>\n\t<img src=\"%s\">\n\n", 
+    snprintf (string, MaxStringSize, "\t<h2>CALL = #%d</h2>\n\t<p>HEAD = %d</p>\n\t<p>TAIL = %d</p>\n\t<p>FREE = %d</p>\n\t<p>CAPACITY = %d</p>\n\t<img src=\"%s\">\n\n", 
         list->num_calls, list->head, list->tail, list->free, list->capacity, file_name);
 
     fprintf (html_file, "%s", string);
