@@ -50,9 +50,8 @@ typedef enum
 typedef enum
 {
     operation = 0,
-    function  = 1,
-    constant  = 2,
-    var_num   = 3,
+    constant  = 1,
+    var_num   = 2,
 } node_type_t;
 
 //————————————————————————————————————————————————————————————————————————————————

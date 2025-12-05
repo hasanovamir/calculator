@@ -16,17 +16,14 @@ main (int argc, char** argv)
 
     tree_context.head = GetG (buffer, &pos);
 
-    TreeDump (tree_context.head);
-
-    OptimizeTree (tree_context.head);
-
-    tree_node_t* ptr = DifferentiateNode (tree_context.head);
+    variables_ctx.variable_arr->value = 0;
 
     TreeDump (tree_context.head);
 
-    TreeDump (ptr);
+    tree_node_t* taylor =  DecomposeFunction (tree_context.head, 0, 0, 5);
 
-    // TreeDump (ptr);
+    TreeDump (taylor);
+
     return 0;
 }
 

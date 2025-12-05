@@ -80,7 +80,7 @@ int
 AddVar (const char* name)
 {
     strcpy (variables_ctx.variable_arr[variables_ctx.count].name, name);
-printf ("ADDVAR count = %d, name = %s\n", variables_ctx.count, name);
+
     variables_ctx.count++;
 
     return variables_ctx.count - 1;

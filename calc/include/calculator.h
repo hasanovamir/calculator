@@ -49,6 +49,14 @@ tree_data_t  MakeVarData                (int         oper_num );
 tree_data_t  MakeDigitData              (double      value    );
 tree_data_t  MakeOperData               (math_oper_t oper     );
 tree_err_t   CalculatorInit             (const char* file_name);
+tree_node_t*
+DecomposeFunction (tree_node_t* node, int value, int var_to_dif, int num_elem);
+tree_data_t
+CountTree (tree_node_t* node);
+void
+ChangeVarToData (tree_node_t* node);
+int
+Factorial (int num);
 
 //——————————————————————————Differentiate funcs——————————————————————————————————————————————————————
 
@@ -99,7 +107,8 @@ tree_node_t* NewNode                     (node_type_t type, tree_data_t data,
 #define SH_(node)           NewNode (operation, MakeOperData (sh_op),     node, nullptr)
 #define CH_(node)           NewNode (operation, MakeOperData (ch_op),     node, nullptr)
 
-#define NEW_DATA_NODE(data) NewNode (constant, MakeDigitData (data),   nullptr, nullptr)
+#define NEW_DATA_NODE(data)    NewNode (constant, MakeDigitData (data), nullptr, nullptr)
+#define NEW_VAR_NODE(var)      NewNode (var_num , MakeVarData   (var ), nullptr, nullptr)
 
 
 //————————————————————————————————————————————————————————————————————————————————

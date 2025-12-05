@@ -44,6 +44,11 @@ MyAlloc ()
     tree_context.size++;
     tree_context.my_alloc_context->src_size++;
 
+    new_node->type = constant;
+    new_node->node_data.immediate = 0;
+    new_node->left_node  = nullptr;
+    new_node->right_node = nullptr;
+
     return new_node;
 }
 
@@ -138,7 +143,7 @@ MyFree (tree_node_t* node)
     int cur_arr = 0;
 
     for (int i = 0; i < tree_context.my_alloc_context->num_src_arr; i++) {
-        if (node > tree_context.my_alloc_context->big_array[i].list.data &&
+        if (node >= tree_context.my_alloc_context->big_array[i].list.data &&
             node < tree_context.my_alloc_context->big_array[i].list.data + AllocCapacity) {
                 cur_arr = i;
                 break;
@@ -164,10 +169,10 @@ void
 FreeSideNodes (tree_node_t* parent_node)
 {
     if (parent_node->left_node) {
-        MyFree (parent_node->left_node );
+        TreeDeleteBranch (parent_node->left_node );
     }
     if (parent_node->right_node) {
-        MyFree (parent_node->right_node);
+        TreeDeleteBranch (parent_node->right_node);
     }
 
     parent_node->left_node  = nullptr;

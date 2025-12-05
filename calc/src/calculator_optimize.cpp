@@ -14,10 +14,10 @@ OptimizeTree (tree_node_t* node)
     }
 
     if (node->type == operation) {
-        if (node->node_data.operation >= root_op) {
-            OptimizeFunctionOfConstant (node);
+        if (node->node_data.operation >= root_op && node->left_node && node->left_node->type == constant) {
+                OptimizeFunctionOfConstant (node);
         }
-        else if (node->left_node  && node->left_node->type  == constant && 
+        else if (node->left_node && node->left_node->type == constant && 
             node->right_node && node->right_node->type == constant) {
             OptimizeTreeIfBothConst (node);
         }
@@ -68,6 +68,8 @@ OptimizeTreeIfBothConst (tree_node_t* node)
     node->type = constant;
 
     node->node_data.immediate = result;
+
+    node->deriv_method = DifferentiateConst;
     
     FreeSideNodes (node);
 }
@@ -85,26 +87,28 @@ OptimizeTreeIfRightConst (tree_node_t* node)
     switch (node->node_data.operation) {
         case addition_op:
             if (CheckToEquality (right_val, 0)) {
+                MyFree (node->right_node);
                 CopyNodeData (node, node->left_node);
-
-                MyFree (left );
-                MyFree (right);
+            }
+            break;
+        case difference_op:
+            if (CheckToEquality (right_val, 0)) {
+                MyFree (node->right_node);
+                CopyNodeData (node, node->left_node);
             }
             break;
         case multiplication_op:
             if (CheckToEquality (right_val, 1)) {
+                MyFree (node->right_node);
                 CopyNodeData (node, node->left_node);
-
-                MyFree (left );
-                MyFree (right);
             } 
             else if (CheckToEquality (right_val, 0)) {
                 node->type = constant;
 
                 node->node_data.immediate = 0;
 
-                TreeDeleteBranch (node->left_node );
-                TreeDeleteBranch (node->right_node);
+                node->deriv_method = DifferentiateConst;
+                FreeSideNodes (node);
             }
             break;
         case exponentiation_op:
@@ -113,14 +117,12 @@ OptimizeTreeIfRightConst (tree_node_t* node)
 
                 node->node_data.immediate = 1;
 
-                TreeDeleteBranch (node->left_node );
-                TreeDeleteBranch (node->right_node);
+                node->deriv_method = DifferentiateConst;
+                FreeSideNodes (node);
             }
             if (right_val == 1) {
+                MyFree (node->right_node);
                 CopyNodeData (node, node->left_node);
-
-                MyFree (left );
-                MyFree (right);
             }
             break;
         default: ;
@@ -140,43 +142,40 @@ OptimizeTreeIfLeftConst (tree_node_t* node)
     switch (node->node_data.operation) {
         case addition_op:
             if (CheckToEquality (left_val, 0)) {
+                MyFree (node->left_node);
                 CopyNodeData (node, node->right_node);
-
-                MyFree (left );
-                MyFree (right);
             }
             break;
         case multiplication_op:
             if (left_val == 1) {
+                MyFree (node->left_node);
                 CopyNodeData (node, node->right_node);
-
-                MyFree (left );
-                MyFree (right);
             } 
             else if (left_val == 0) {
                 node->type = constant;
 
                 node->node_data.immediate = 0;
 
-                TreeDeleteBranch (node->left_node );
-                TreeDeleteBranch (node->right_node);
+                node->deriv_method = DifferentiateConst;
+                FreeSideNodes (node);
             }
+            break;
         case exponentiation_op:
             if (left_val == 0) {
                 node->type = constant;
 
                 node->node_data.immediate = 0;
 
-                TreeDeleteBranch (node->left_node );
-                TreeDeleteBranch (node->right_node);
+                node->deriv_method = DifferentiateConst;
+                FreeSideNodes (node);
             }
             if (left_val == 1) {
                 node->type = constant;
 
                 node->node_data.immediate = 1;
 
-                TreeDeleteBranch (node->left_node );
-                TreeDeleteBranch (node->right_node);
+                node->deriv_method = DifferentiateConst;
+                FreeSideNodes (node);
             }
             break;
         default : ;
@@ -208,16 +207,19 @@ CopyNodeData (tree_node_t* destination_node, tree_node_t* source_node)
             destination_node->node_data.immediate = source_node->node_data.immediate;
             destination_node->left_node  = NULL;
             destination_node->right_node = NULL;
+            destination_node->deriv_method = source_node->deriv_method;
             return ;
         case operation:
-            destination_node->node_data.operation = source_node->node_data.operation;//нужно сына сохранить...
-            destination_node->left_node  = source_node->left_node ;
-            destination_node->right_node = source_node->right_node;
+            destination_node->node_data.operation = source_node->node_data.operation;
+            destination_node->left_node           = source_node->left_node ;
+            destination_node->right_node          = source_node->right_node;
+            destination_node->deriv_method        = source_node->deriv_method;
             return ;
         case var_num:
             destination_node->node_data.var_number = source_node->node_data.var_number;
             destination_node->left_node  = NULL;
             destination_node->right_node = NULL;
+            destination_node->deriv_method = source_node->deriv_method;
             return ;
         default:
             PRINTERR (TREE_UNKNOWN_DATA_TYPE);
@@ -233,11 +235,11 @@ OptimizeFunctionOfConstant (tree_node_t* node)
 
     math_oper_t oper = node->node_data.operation;
 
-    if (oper == root_op) {
+    if (oper == root_op && node->right_node && node->right_node->type == constant) {
         node->node_data.immediate = pow (node->left_node ->node_data.immediate, 
                                          1 / node->right_node->node_data.immediate);
     }
-    else if (oper == logarithm_op) {
+    else if (oper == logarithm_op && node->right_node && node->right_node->type == constant) {
         node->node_data.immediate = log (node->right_node->node_data.immediate) / log (node->left_node->node_data.immediate); 
     }
     else if (oper == sin_op) {
@@ -270,17 +272,14 @@ OptimizeFunctionOfConstant (tree_node_t* node)
     else if (oper == ch_op) {
         node->node_data.immediate = cosh (node->left_node->node_data.immediate);
     }
-
-    node->type = constant;
-
-    MyFree (node->left_node);
-
-    if (node->right_node) {
-        MyFree (node->right_node);
+    else {
+        return ;
     }
 
-    node->left_node  = nullptr;
-    node->right_node = nullptr;
+    node->type = constant;
+    node->deriv_method = DifferentiateConst;
+
+    FreeSideNodes (node);
 }
 
 //--------------------------------------------------------------------------------

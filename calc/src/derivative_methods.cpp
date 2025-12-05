@@ -5,7 +5,9 @@
 tree_node_t*
 DifferentiateNode (tree_node_t* node, int arg)
 {
-    DEBUG_ASSERT (node != nullptr);
+    if (node == nullptr) {
+        return nullptr;
+    }
 
     return node->deriv_method (node, arg);
 }
@@ -15,18 +17,9 @@ DifferentiateNode (tree_node_t* node, int arg)
 tree_node_t* 
 CopyTree (tree_node_t* node)
 {
-    DEBUG_ASSERT (node     != nullptr);
+    DEBUG_ASSERT (node != nullptr);
 
-    tree_node_t* new_node = nullptr;
-
-    if (MakeNode (&new_node)) {
-        return nullptr;
-    }
-
-    new_node->type                 = node->type;
-    new_node->node_data.immediate  = node->node_data.immediate;
-    new_node->node_data.operation  = node->node_data.operation;
-    new_node->node_data.var_number = node->node_data.var_number;
+    tree_node_t* new_node = NewNode (node->type, node->node_data, node->left_node, node->right_node);
 
     if (node->left_node) {
         new_node->left_node = CopyTree (node->left_node);
@@ -91,6 +84,13 @@ DifferentiateMultiplication (tree_node_t* node, int arg)
 tree_node_t* 
 DifferentiateDivision (tree_node_t* node, int arg)
 {
+    int degree = 0;
+    if (node->right_node->type == operation && node->right_node->node_data.operation == exponentiation_op) {
+        degree = node->right_node->right_node->node_data.immediate + 1;
+    }
+    else {
+        degree = 2;
+    }
     return DIV_ (DIF_ (MUL_ (d_ (node->left_node, arg), c_ (node->right_node)), 
                        MUL_ (c_ (node->left_node), d_ (node->right_node, arg))), 
                  EXP_ (c_ (node->right_node), NEW_DATA_NODE (2)));
@@ -106,7 +106,7 @@ DifferentiateExponential (tree_node_t* node, int arg)
     tree_node_t* f = c_ (node->right_node);
     
     tree_node_t* summand_1 = MUL_ (MUL_ (c_ (node->right_node), EXP_ (c_ (node->left_node),  DIF_ (c_ (node->right_node), NEW_DATA_NODE (1)  ))), d_ (node->left_node,  arg));
-    tree_node_t* summand_2 = MUL_ (MUL_ (EXP_ (c_ (node->left_node), c_ (node->right_node)), LOG_ (c_ (node->left_node), NEW_DATA_NODE (2.71 ))), d_ (node->right_node, arg));
+    tree_node_t* summand_2 = MUL_ (MUL_ (EXP_ (c_ (node->left_node), c_ (node->right_node)), LOG_ (NEW_DATA_NODE (2.71 ), c_ (node->left_node))), d_ (node->right_node, arg));
     
     return ADD_(summand_1, summand_2);
 }
@@ -133,11 +133,11 @@ tree_node_t*
 DifferentiateLog (tree_node_t* node, int arg)
 {
     // d(log[a](u)) = du / (u * ln(a))
-    tree_node_t* u  = c_ (node->left_node );
-    tree_node_t* a  = c_ (node->right_node);
-    tree_node_t* du = d_ (node->left_node, arg);
+    tree_node_t* u  = c_ (node->right_node);
+    tree_node_t* a  = c_ (node->left_node);
+    tree_node_t* du = d_ (node->right_node, arg);
     
-    return DIV_ (du, MUL_ (u, LOG_ (a, nullptr)));
+    return DIV_ (du, MUL_ (u, LOG_ (NEW_DATA_NODE (2.71), a)));
 }
 
 //--------------------------------------------------------------------------------
